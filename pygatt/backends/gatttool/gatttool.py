@@ -305,9 +305,11 @@ class GATTToolBackend(BLEBackend):
                         "Timed out waiting for a notification")
 
     def _handle_notification_string(self, msg):
-        hex_handle, _, hex_value = msg.strip().split()[3:]
+        parts = msg.strip().split()
+        hex_handle = parts[3]
+        hex_value = parts[5:]
         handle = int(hex_handle, 16)
-        value = bytearray(hex_value)
+        value = bytearray([int(x, 16) for x in hex_value])
         if self._connected_device is not None:
             self._connected_device.receive_notification(handle, value)
 

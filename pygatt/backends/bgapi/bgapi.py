@@ -447,7 +447,7 @@ class BGAPIBackend(BLEBackend):
         Raises an ExpectedResponseTimeout if one of the expected responses is
             not receiving withint the time limit.
         """
-        timeout = timeout or 1
+        timeout = timeout or 2
         log.debug("Expecting a response of one of %s within %fs",
                   expected_packet_choices, timeout or 0)
 

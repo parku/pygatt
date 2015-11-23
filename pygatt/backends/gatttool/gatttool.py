@@ -129,6 +129,10 @@ class GATTToolBackend(BLEBackend):
         terminate cleanly, and may leave your Bluetooth adapter in a bad state.
         """
 
+        # Without restarting, sometime's lescan will report an Input/Output
+        # error.
+        self.reset()
+
         cmd = 'hcitool lescan'
         if run_as_root:
             cmd = 'sudo %s' % cmd

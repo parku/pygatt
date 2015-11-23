@@ -142,7 +142,7 @@ class GATTToolBackend(BLEBackend):
             message = "Unexpected error when scanning"
             if "No such device" in scan.before.decode('utf-8'):
                 message = "No BLE adapter found"
-            log.error(message)
+            log.error(message, exc_info=True)
             raise BLEError(message)
         except pexpect.TIMEOUT:
             devices = {}

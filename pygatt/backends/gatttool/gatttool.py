@@ -331,7 +331,7 @@ class GATTToolBackend(BLEBackend):
 
             if wait_for_response:
                 try:
-                    self._expect('Characteristic value written successfully')
+                    self._expect(re.compile('Characteristic value (was){0,1} written successfully'))
                 except NoResponseError:
                     log.error("No response received", exc_info=True)
                     raise

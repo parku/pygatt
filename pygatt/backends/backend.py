@@ -28,7 +28,8 @@ class BLEBackend(object):
         """
         return True
 
-    def connect(self, address, timeout=DEFAULT_CONNECT_TIMEOUT_S, **kwargs):
+    def connect(self, address, timeout=DEFAULT_CONNECT_TIMEOUT_S,
+                disconnect_handler=None, **kwargs):
         """Return a BLEDevice for the connection if connected, otherwise raise
         an exception.
         """

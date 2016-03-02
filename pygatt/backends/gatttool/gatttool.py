@@ -59,6 +59,7 @@ class GATTToolBackend(BLEBackend):
         self._gatttool_logfile = gatttool_logfile
         self._receiver = None  # background notification receiving thread
         self._con = None  # gatttool interactive session
+        self._disconnect_handler = None
 
     def supports_unbonded(self):
         return False
@@ -174,7 +175,7 @@ class GATTToolBackend(BLEBackend):
         return []
 
     def connect(self, address, timeout=DEFAULT_CONNECT_TIMEOUT_S,
-                address_type='public'):
+                disconnect_handler=None, address_type='public'):
         log.info('Connecting with timeout=%s', timeout)
         self._con.sendline('sec-level low')
         self._address = address
@@ -190,6 +191,7 @@ class GATTToolBackend(BLEBackend):
             raise NotConnectedError(message)
 
         self._connected_device = GATTToolBLEDevice(address, self)
+        self._disconnect_handler = disconnect_handler;
         return self._connected_device
 
     def clear_bond(self, address=None):
@@ -297,6 +299,8 @@ class GATTToolBackend(BLEBackend):
                     elif matched_pattern_index == 3:
                         if self._running.is_set():
                             log.info("Disconnected")
+                            if self._disconnect_handler:
+                                self._disconnect_handler()
                 except pexpect.TIMEOUT:
                     raise NotificationTimeout(
                         "Timed out waiting for a notification")

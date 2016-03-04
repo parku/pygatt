@@ -23,6 +23,7 @@ from .device import GATTToolBLEDevice
 log = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT_S = 0.5
+DEFAULT_NOTIFICATION_TIMEOUT_S = 1.0
 
 
 def at_most_one_device(func):
@@ -45,7 +46,7 @@ class GATTToolBackend(BLEBackend):
     _GATTTOOL_PROMPT = r".*> "
 
     def __init__(self, hci_device='hci0', gatttool_logfile=None,
-                 cli_options=None):
+                 cli_options=None, notification_timeout=DEFAULT_NOTIFICATION_TIMEOUT_S ):
         """
         Initialize.
 
@@ -60,6 +61,7 @@ class GATTToolBackend(BLEBackend):
         self._receiver = None  # background notification receiving thread
         self._con = None  # gatttool interactive session
         self._disconnect_handler = None
+        self._notification_timeout = notification_timeout
 
     def supports_unbonded(self):
         return False
@@ -335,7 +337,9 @@ class GATTToolBackend(BLEBackend):
 
             if wait_for_response:
                 try:
-                    self._expect(re.compile('Characteristic value (was){0,1} written successfully'))
+                    self._expect(
+                        re.compile('Characteristic value (was){0,1} written successfully'),
+                        self._notification_timeout)
                 except NoResponseError:
                     log.error("No response received", exc_info=True)
                     raise
